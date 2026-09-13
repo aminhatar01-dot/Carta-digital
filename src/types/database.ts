@@ -193,4 +193,5 @@ export interface Reservation {
 // Placeholder mínimo de Database para tipar los clientes de Supabase.
 // (No usamos el generador de tipos de Supabase CLI en este entorno;
 // las tablas se tipan explícitamente arriba y se castea al usarlas.)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Database = any;
