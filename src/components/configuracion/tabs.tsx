@@ -7,6 +7,7 @@ const TABS = [
   { href: "/configuracion", label: "Datos del local" },
   { href: "/configuracion/mesas", label: "Mesas y zonas" },
   { href: "/configuracion/usuarios", label: "Usuarios" },
+  { href: "/configuracion/suscripcion", label: "Suscripción" },
 ];
 
 export default function ConfiguracionTabs() {
