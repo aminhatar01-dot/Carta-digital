@@ -1,8 +1,26 @@
-export default function Page() {
+import { createClient } from "@/lib/supabase/server";
+import { getSessionContext } from "@/lib/auth/session";
+import QrManager from "@/components/qr/qr-manager";
+import type { RestaurantTable } from "@/types/database";
+
+export default async function QrPage() {
+  const session = await getSessionContext();
+  const tenantId = session!.tenant!.id;
+  const supabase = createClient();
+
+  const { data: tables } = await supabase
+    .from("tables")
+    .select("*")
+    .eq("tenant_id", tenantId)
+    .order("number");
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-neutral-900">QR de mesas</h1>
-      <p className="text-neutral-500 mt-2">Módulo en construcción — próxima fase.</p>
-    </div>
+    <QrManager
+      tables={(tables ?? []) as RestaurantTable[]}
+      slug={session!.tenant!.slug}
+      baseUrl={baseUrl}
+    />
   );
 }
