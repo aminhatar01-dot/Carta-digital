@@ -1,8 +1,33 @@
-export default function Page() {
+import { createClient } from "@/lib/supabase/server";
+import { getSessionContext } from "@/lib/auth/session";
+import ReservasManager from "@/components/reservas/reservas-manager";
+import type { Reservation, RestaurantTable } from "@/types/database";
+
+export default async function ReservasPage({
+  searchParams,
+}: {
+  searchParams: { date?: string };
+}) {
+  const session = await getSessionContext();
+  const tenantId = session!.tenant!.id;
+  const supabase = createClient();
+  const date = searchParams.date || new Date().toISOString().slice(0, 10);
+
+  const [{ data: reservations }, { data: tables }] = await Promise.all([
+    supabase
+      .from("reservations")
+      .select("*")
+      .eq("tenant_id", tenantId)
+      .eq("reservation_date", date)
+      .order("reservation_time"),
+    supabase.from("tables").select("*").eq("tenant_id", tenantId).order("number"),
+  ]);
+
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-neutral-900">Reservas</h1>
-      <p className="text-neutral-500 mt-2">Módulo en construcción — próxima fase.</p>
-    </div>
+    <ReservasManager
+      date={date}
+      reservations={(reservations ?? []) as Reservation[]}
+      tables={(tables ?? []) as RestaurantTable[]}
+    />
   );
 }
